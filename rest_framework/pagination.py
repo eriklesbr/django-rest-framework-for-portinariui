@@ -218,11 +218,20 @@ class PageNumberPagination(BasePagination):
         return list(self.page)
 
     def get_paginated_response(self, data):
+        if self.page.has_next():
+            return Response(OrderedDict([
+                ('total', self.page.paginator.count),
+                ('hasNext', True),
+                ('next', self.get_next_link()),
+                ('previous', self.get_previous_link()),
+                ('items', data)
+            ]))
         return Response(OrderedDict([
-            ('count', self.page.paginator.count),
+            ('total', self.page.paginator.count),
+            ('hasNext', False),
             ('next', self.get_next_link()),
             ('previous', self.get_previous_link()),
-            ('results', data)
+            ('items', data)
         ]))
 
     def get_paginated_response_schema(self, schema):
